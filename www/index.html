@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TAFH PRO</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ff6a00">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="TAFH PRO">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui;background:#fff7ed;display:flex;min-height:100vh;align-items:center;justify-content:center;padding:16px}
+.card{background:#fff;width:100%;max-width:420px;border-radius:24px;padding:24px;box-shadow:0 20px 40px rgba(0,0,0,.12);text-align:center}
+h1{color:#ff6a00;margin:0}.sub{color:#666;margin:8px 0 16px}
+video{width:100%;height:280px;background:#000;border-radius:16px;object-fit:cover;margin-top:12px}
+button{width:100%;padding:14px;border:0;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px}
+.primary{background:#ff6a00;color:#fff}.secondary{background:#fff1e6;color:#ff6a00}
+#log{margin-top:10px;color:#444;font-size:14px}
+.note{margin-top:14px;font-size:12px;color:#888}
+</style>
+</head>
+<body>
+<div class="card">
+<h1>TAFH PRO 🍊</h1>
+<div class="sub">تطبيق طفح برو - كشف الطفح بالكاميرا</div>
+<button class="primary" id="btnCam" onclick="startCam()">📷 شغل الكاميرا</button>
+<video id="v" autoplay playsinline muted></video>
+<button class="secondary" id="btnCap" style="display:none" onclick="capture()">التقاط وتحليل</button>
+<canvas id="c" style="display:none"></canvas>
+<div id="log">جاهز</div>
+<div class="note">⚠️ التطبيق للتوعية فقط وليس بديلاً عن التشخيص الطبي. استشر طبيب الجلدية.</div>
+</div>
+<script>
+let stream=null;
+async function startCam(){
+ const log=document.getElementById('log');
+ try{
+  log.textContent='بشغل الكاميرا...';
+  stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}}, audio:false});
+  const v=document.getElementById('v');
+  v.srcObject=stream;
+  await v.play();
+  document.getElementById('btnCap').style.display='block';
+  log.textContent='الكاميرا شغالة ✓ وجهيها للطفح';
+ }catch(e){
+  log.textContent='محتاج HTTPS وسماح للكاميرا: '+e.message;
+ }
+}
+function capture(){
+ const v=document.getElementById('v');
+ const c=document.getElementById('c');
+ c.width=v.videoWidth; c.height=v.videoHeight;
+ c.getContext('2d').drawImage(v,0,0);
+ document.getElementById('log').textContent='تم الالتقاط ✓ (هنا تحطي موديل الذكاء الاصطناعي)';
+}
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}
+</script>
+</body>
+</html>
